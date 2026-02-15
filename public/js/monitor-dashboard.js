@@ -19,6 +19,7 @@ let audioUnlocked = false;
 
 // Simpan status sebelumnya untuk deteksi perubahan
 const previousStatus = new Map();
+const alertedDisconnectIds = new Set();
 
 // Track card yang sedang di-hover untuk update real-time tooltip
 let hoveredCardId = null;
@@ -123,9 +124,13 @@ function checkStatusChange(id, newStatus) {
             console.log(`🟢 Device ${id} RECOVERED (Down to Up)!`);
             playNotificationSound('connect');
         } else if (newStatus === 'disconnected' && oldStatus !== 'disconnected') {
-            console.log(`🔴 Device ${id} CRITICAL (Now Down)!`);
-            playNotificationSound('disconnect');
-        } 
+            console.log(`🔴 Device ${id} DOWN (Waiting 60s for sound alert)...`);
+        }
+
+        // Hapus tracking alert jika keluar dari status disconnected
+        if (oldStatus === 'disconnected' && newStatus !== 'disconnected') {
+            alertedDisconnectIds.delete(id);
+        }
     }
     // Update status simpanan
     previousStatus.set(id, newStatus);
@@ -227,12 +232,12 @@ window.resetZoom = () => {
     const cards = document.querySelectorAll('.monitor-card');
     const container = document.getElementById('tree-container');
     const viewport = document.getElementById('tree-viewport');
-    
+
     if (cards.length === 0 || !container || !viewport) return;
 
     // 1. Reset ke posisi netral agar pembacaan koordinat akurat
     viewport.style.transform = "none";
-    
+
     // 2. Kalkulasi area terluar kartu (Bounding Box)
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     const vRect = viewport.getBoundingClientRect();
@@ -257,10 +262,10 @@ window.resetZoom = () => {
     const padding = 80;
     const scaleX = containerW / (contentW + (padding * 2));
     const scaleY = containerH / (contentH + (padding * 2));
-    
+
     // Pilih skala terkecil agar muat secara horizontal maupun vertikal
     let newZoom = Math.min(scaleX, scaleY);
-    
+
     // Batasan zoom agar tetap proporsional
     newZoom = Math.max(0.1, Math.min(newZoom, 1.2));
 
@@ -268,7 +273,7 @@ window.resetZoom = () => {
     // Titik tengah layar dikurangi (titik tengah konten yang sudah di-zoom)
     panX = (containerW / 2) - ((minX + contentW / 2) * newZoom);
     panY = (containerH / 2) - ((minY + contentH / 2) * newZoom);
-    
+
     currentZoom = newZoom;
 
     // 5. Eksekusi Transformasi
@@ -514,7 +519,7 @@ function updateStatusCounters() {
 }
 
 // Set Interval refresh (500ms = 0.5 detik)
-setInterval(refreshData, 1000);
+setInterval(refreshData, 5000);
 
 // Init awal
 window.onload = () => { setTimeout(drawTreeLines, 100); };
@@ -617,16 +622,31 @@ function updateDownQueue() {
 
     // Ambil semua monitor-card yang statusnya disconnected
     const allDownCards = Array.from(document.querySelectorAll('.monitor-card[data-status="disconnected"]'));
-    
+
     // FILTER LOGIC: Hanya ambil perangkat yang sudah down >= 60 detik
     const downCards = allDownCards.filter(card => {
         const downSince = new Date(card.getAttribute('data-down-since'));
         const now = new Date();
         const diffInSeconds = Math.floor((now - downSince) / 1000);
-        
+
         // Return true jika sudah 1 menit (60 detik)
         return diffInSeconds >= 60;
     });
+
+    // CHECK & PLAY SOUND (Jika baru mencapai 60s)
+    let triggerSound = false;
+    downCards.forEach(card => {
+        const id = card.getAttribute('data-id');
+        if (!alertedDisconnectIds.has(id)) {
+            alertedDisconnectIds.add(id);
+            triggerSound = true;
+            console.log(`🔊 Triggering delayed disconnect sound for device ${id}`);
+        }
+    });
+
+    if (triggerSound) {
+        playNotificationSound('disconnect');
+    }
 
     // Jika tidak ada yang down, tampilkan pesan aman
     if (downCards.length === 0) {
