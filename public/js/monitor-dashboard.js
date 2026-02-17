@@ -18,8 +18,11 @@ let soundEnabled = true; // DEFAULT ON
 let audioUnlocked = false;
 
 // Simpan status sebelumnya untuk deteksi perubahan
+// Simpan status sebelumnya untuk deteksi perubahan
 const previousStatus = new Map();
+const notifiedConnectIds = new Set(); // Track devices that have already played connect sound
 const alertedDisconnectIds = new Set();
+const disconnectTimes = new Map(); // Track WHEN a device disconnected locally
 
 // Track card yang sedang di-hover untuk update real-time tooltip
 let hoveredCardId = null;
@@ -130,6 +133,12 @@ function checkStatusChange(id, newStatus) {
         // Hapus tracking alert jika keluar dari status disconnected
         if (oldStatus === 'disconnected' && newStatus !== 'disconnected') {
             alertedDisconnectIds.delete(id);
+            disconnectTimes.delete(id); // Reset disconnect timer
+        }
+
+        // Jika baru disconnect, simpan waktu sekarang agar timer mulai dari 0
+        if (newStatus === 'disconnected' && oldStatus !== 'disconnected') {
+            disconnectTimes.set(id, new Date());
         }
     }
     // Update status simpanan
@@ -625,7 +634,14 @@ function updateDownQueue() {
 
     // FILTER LOGIC: Hanya ambil perangkat yang sudah down >= 60 detik
     const downCards = allDownCards.filter(card => {
-        const downSince = new Date(card.getAttribute('data-down-since'));
+        const id = card.getAttribute('data-id');
+        let downSince = new Date(card.getAttribute('data-down-since'));
+
+        // Prioritas: Gunakan waktu deteksi lokal jika ada (agar timer mulai dari 0)
+        if (disconnectTimes.has(id)) {
+            downSince = disconnectTimes.get(id);
+        }
+
         const now = new Date();
         const diffInSeconds = Math.floor((now - downSince) / 1000);
 
@@ -683,7 +699,12 @@ function updateDownQueue() {
         const id = card.getAttribute('data-id');
         const name = card.querySelector('.device-title').innerText;
         const ip = card.getAttribute('data-ip');
-        const downSince = card.getAttribute('data-down-since') || new Date().toISOString();
+
+        let downSince = card.getAttribute('data-down-since') || new Date().toISOString();
+        // Prioritas: Gunakan waktu deteksi lokal jika ada
+        if (disconnectTimes.has(id)) {
+            downSince = disconnectTimes.get(id).toISOString();
+        }
 
         let alertBox = container.querySelector(`.down-alert-card[data-alert-id="${id}"]`);
 

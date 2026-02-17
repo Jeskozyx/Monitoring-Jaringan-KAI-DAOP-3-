@@ -13,8 +13,10 @@ class HistoryController extends Controller
     // =================================================================
     public function index(Request $request)
     {
-        // Query Dasar
-        $query = Incident::with('monitor')->orderBy('down_at', 'desc');
+        // Query Dasar (Filter durasi > 1 menit)
+        $query = Incident::with('monitor')
+            ->whereRaw('TIMESTAMPDIFF(SECOND, down_at, COALESCE(up_at, NOW())) >= 60')
+            ->orderBy('down_at', 'desc');
 
         // Filter Status
         if ($request->filled('status')) {
@@ -53,7 +55,9 @@ class HistoryController extends Controller
     // =================================================================
     public function getTableData(Request $request)
     {
-        $query = Incident::with('monitor')->orderBy('down_at', 'desc');
+        $query = Incident::with('monitor')
+            ->whereRaw('TIMESTAMPDIFF(SECOND, down_at, COALESCE(up_at, NOW())) >= 60')
+            ->orderBy('down_at', 'desc');
 
         if ($request->filled('status')) {
             if ($request->status == 'resolved') {
@@ -104,6 +108,10 @@ class HistoryController extends Controller
                 case '1_year':
                     $query->where('down_at', '>=', Carbon::now()->subYear());
                     $msg = 'Riwayat 1 tahun terakhir berhasil dihapus.';
+                    break;
+                case 'all':
+                    // Hapus semua data yang tersisa tanpa filter waktu extra
+                    $msg = 'Semua riwayat berhasil dihapus.';
                     break;
                 default:
                     return redirect()->back()->with('error', 'Periode tidak valid.');
