@@ -54,7 +54,7 @@
                     $duration = $diff->format('%Hj %Im %Sd');
                 @endphp
                 <span
-                    class="inline-block px-4 py-3 md:px-8 md:py-4 rounded-2xl bg-red-600 text-white shadow-2xl shadow-red-200 animate-pulse font-black text-sm md:text-xl italic tracking-tighter">
+                    class="inline-block px-4 py-3 md:px-8 md:py-4 rounded-2xl bg-red-600 text-white shadow-2xl shadow-red-200 font-black text-sm md:text-xl italic tracking-tighter">
                     {{ $duration }}
                 </span>
             </td>
