@@ -16,9 +16,12 @@ body {
 
 /* Memperbesar Nama Perangkat saat Zoom Jauh */
 .hide-latency .device-title {
-    font-size: 40px !important; /* Ukuran besar agar terlihat saat zoom 20% */
-    white-space: normal !important; /* Agar teks tidak terpotong (truncate) */
-    word-break: break-word !important; /* Sangat penting agar teks tidak keluar kartu saat besar */
+    font-size: 40px !important;
+    /* Ukuran besar agar terlihat saat zoom 20% */
+    white-space: normal !important;
+    /* Agar teks tidak terpotong (truncate) */
+    word-break: break-word !important;
+    /* Sangat penting agar teks tidak keluar kartu saat besar */
     line-height: 1 !important;
     text-align: center !important;
 }
@@ -35,7 +38,7 @@ body {
 
 
 /* Sembunyikan elemen dekorasi kecil yang tidak perlu saat zoom jauh */
-.hide-latency .device-leds, 
+.hide-latency .device-leds,
 .hide-latency .action-buttons,
 .hide-latency .status-text {
     display: none !important;
@@ -118,6 +121,8 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 1;
+    overflow: visible !important;
+    /* Ensure lines are not clipped */
 }
 
 .tree-line {
@@ -382,11 +387,15 @@ body {
 
 /* REVISI: Hilangkan kodingan @keyframes latency-glow dan ganti class ini */
 .latency-danger-pulse {
-    background-color: #ef4444 !important; /* Merah solid */
-    border-color: #b91c1c !important; /* Border merah gelap */
+    background-color: #ef4444 !important;
+    /* Merah solid */
+    border-color: #b91c1c !important;
+    /* Border merah gelap */
     color: white !important;
-    animation: none !important; /* MATIKAN ANIMASI */
-    box-shadow: none !important; /* Hapus efek glow neon */
+    animation: none !important;
+    /* MATIKAN ANIMASI */
+    box-shadow: none !important;
+    /* Hapus efek glow neon */
 }
 
 /* ============================================================
@@ -453,6 +462,7 @@ body {
     padding: 0 60px;
     margin-bottom: -8px;
 }
+
 .antenna-rod {
     width: 8px;
     height: 50px;
@@ -460,8 +470,14 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 4px;
 }
-.antenna-rod.left { transform: rotate(-8deg); }
-.antenna-rod.right { transform: rotate(8deg); }
+
+.antenna-rod.left {
+    transform: rotate(-8deg);
+}
+
+.antenna-rod.right {
+    transform: rotate(8deg);
+}
 
 /* Body Melengkung Trapesium */
 .router-chassis {
@@ -473,18 +489,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
 /* REVISI: Kotak Lingkup (Panel Indikator) */
 .router-display-panel {
-    background: #e2e8f0; /* Warna panel yang kontras dengan body putih */
+    background: #e2e8f0;
+    /* Warna panel yang kontras dengan body putih */
     border-radius: 20px;
     padding: 10px 25px;
     margin: 0 auto;
     width: fit-content;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); /* Efek kedalam */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Efek kedalam */
 }
 
 .led-bulb {
@@ -494,7 +512,9 @@ body {
     position: relative;
 }
 
-.shadow-glow { box-shadow: 0 0 8px currentColor; }
+.shadow-glow {
+    box-shadow: 0 0 8px currentColor;
+}
 
 /* Penyesuaian agar konten tetap di dalam kotak dashboard */
 .hardware-visual-area {
@@ -503,13 +523,20 @@ body {
 }
 
 /* Antena miring */
-.antenna-rod.left { transform: rotate(-12deg); transform-origin: bottom; }
-.antenna-rod.right { transform: rotate(12deg); transform-origin: bottom; }
+.antenna-rod.left {
+    transform: rotate(-12deg);
+    transform-origin: bottom;
+}
+
+.antenna-rod.right {
+    transform: rotate(12deg);
+    transform-origin: bottom;
+}
 
 /* Efek kedalaman kotak indikator router */
 .router-display-panel {
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Memastikan kartu tidak meluap saat hover */
@@ -557,7 +584,7 @@ body {
     position: relative;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 
+    box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.6),
         0 1px 0 rgba(255, 255, 255, 0.05);
 }
@@ -565,14 +592,14 @@ body {
 .port-slot:hover {
     border-color: #64748b;
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.6),
         0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .port-slot.active {
     border-color: #3b82f6;
-    box-shadow: 
+    box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.6),
         0 0 12px rgba(59, 130, 246, 0.4),
         0 1px 0 rgba(59, 130, 246, 0.2);
@@ -585,13 +612,11 @@ body {
     transform: translateX(-50%);
     width: 14px;
     height: 3px;
-    background: repeating-linear-gradient(
-        90deg,
-        #475569 0px,
-        #475569 2px,
-        transparent 2px,
-        transparent 4px
-    );
+    background: repeating-linear-gradient(90deg,
+            #475569 0px,
+            #475569 2px,
+            transparent 2px,
+            transparent 4px);
 }
 
 .port-label {
@@ -901,12 +926,16 @@ body {
     color: #0f172a;
     margin-bottom: 4px;
     line-height: 1.2;
-    white-space: normal !important; /* Memaksa teks turun ke bawah, bukan satu baris */
-    overflow: visible !important;  /* Memastikan teks tidak tersembunyi */
-    text-overflow: clip !important; /* Menghilangkan efek titik-titik (...) */
+    white-space: normal !important;
+    /* Memaksa teks turun ke bawah, bukan satu baris */
+    overflow: visible !important;
+    /* Memastikan teks tidak tersembunyi */
+    text-overflow: clip !important;
+    /* Menghilangkan efek titik-titik (...) */
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    word-break: break-word; /* Memutus kata jika terlalu panjang agar tidak keluar kartu */
+    word-break: break-word;
+    /* Memutus kata jika terlalu panjang agar tidak keluar kartu */
     line-height: 1.2 !important;
 }
 
@@ -1041,13 +1070,16 @@ body {
 }
 
 .down-alert-card .duration-timer {
-    background: #b91c1c !important; /* Merah KAI */
+    background: #b91c1c !important;
+    /* Merah KAI */
     color: #ffffff !important;
     padding: 0.4rem;
     border-radius: 0.5rem;
     text-align: center;
     font-weight: 900;
     font-size: 1.1rem;
-    animation: none !important; /* Pastikan tidak ada animasi */
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Hanya bayangan dalam untuk efek dimensi, bukan glow */
+    animation: none !important;
+    /* Pastikan tidak ada animasi */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    /* Hanya bayangan dalam untuk efek dimensi, bukan glow */
 }

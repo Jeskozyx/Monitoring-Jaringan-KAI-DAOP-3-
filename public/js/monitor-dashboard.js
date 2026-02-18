@@ -194,14 +194,14 @@ window.getCurrentZoom = () => currentZoom;
 
 function updateTransform() {
     viewport.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
-    
+
     if (zoomInput) zoomInput.value = Math.round(currentZoom * 100);
 
     // ==========================================
     // LOGIKA DINAMIS: SEMBUNYIKAN LATENCY
     // ==========================================
     const treeContainer = document.getElementById('tree-viewport'); // Pastikan id-nya benar
-    
+
     // Jika zoom kurang dari 0.6 (60%), sembunyikan kotak latency
     if (currentZoom < 0.6) {
         treeContainer.classList.add('hide-latency');
@@ -390,62 +390,48 @@ function drawTreeLines() {
                     if (minX !== Infinity) createPath(`M ${minX} ${midY} L ${maxX} ${midY}`, 'pending');
 
                 } else if (direction === 'right') {
-    // 1. SCAN SELURUH DEVICE DI UTARA & SELATAN UNTUK CARI TITIK TERJAUH
-    const utaraCards = document.querySelectorAll('#zone-utara .monitor-card');
-    const selatanCards = document.querySelectorAll('#zone-selatan .monitor-card');
-    
-    // Tentukan titik "Tiang Vertikal" (midX)
-    // Beri jarak minimal 150px dari parent, atau ikuti device paling kanan
-    let maxRightX = pPos.x + pPos.w + 150; 
+                    // 1. GUNAKAN JARAK FIXED (JANGAN SCAN LINTAS UTARA/SELATAN)
+                    // Agar turunan Center (kanan) tidak terdorong terlalu jauh
+                    const midX = pPos.x + pPos.w + 100; // Fixed gap 100px dari sisi kanan parent
 
-    [...utaraCards, ...selatanCards].forEach(card => {
-        const cPos = getPos(card);
-        const cardRightEdge = cPos.x + cPos.w + 80; // Tambah buffer 80px agar garis tidak mepet label
-        if (cardRightEdge > maxRightX) {
-            maxRightX = cardRightEdge;
-        }
-    });
+                    // 2. PAKSA CONTAINER ANAKAN BERGESER KE KANAN (Agar tidak menutupi label)
+                    if (childrenContainer) {
+                        // Geser container anakan sejauh midX agar sejajar dengan ujung garis
+                        const offset = midX - (pPos.x + pPos.w) + 30;
+                        childrenContainer.style.marginLeft = `${offset}px`;
+                        childrenContainer.style.display = 'flex'; // Pastikan terlihat
+                    }
 
-    const midX = maxRightX;
+                    let minY = Infinity, maxY = -Infinity;
 
-    // 2. PAKSA CONTAINER ANAKAN BERGESER KE KANAN (Agar tidak menutupi label)
-    if (childrenContainer) {
-        // Geser container anakan sejauh midX agar sejajar dengan ujung garis
-        const offset = midX - (pPos.x + pPos.w) + 30; 
-        childrenContainer.style.marginLeft = `${offset}px`;
-        childrenContainer.style.display = 'flex'; // Pastikan terlihat
-    }
+                    // 3. GAMBAR CABANG KE SETIAP ANAKAN (Garis dari Tiang ke Kartu)
+                    cPositions.forEach(item => {
+                        const cPos = item.pos;
+                        minY = Math.min(minY, cPos.cy);
+                        maxY = Math.max(maxY, cPos.cy);
+                        const status = item.el.dataset.status || 'pending';
 
-    let minY = Infinity, maxY = -Infinity;
+                        // Garis horizontal dari Tiang Vertikal (midX) ke SISI KIRI kartu anak
+                        createPath(`M ${midX} ${cPos.cy} L ${cPos.x} ${cPos.cy}`, status);
+                    });
 
-    // 3. GAMBAR CABANG KE SETIAP ANAKAN (Garis dari Tiang ke Kartu)
-    cPositions.forEach(item => {
-        const cPos = item.pos;
-        minY = Math.min(minY, cPos.cy);
-        maxY = Math.max(maxY, cPos.cy);
-        const status = item.el.dataset.status || 'pending';
-        
-        // Garis horizontal dari Tiang Vertikal (midX) ke SISI KIRI kartu anak
-        createPath(`M ${midX} ${cPos.cy} L ${cPos.x} ${cPos.cy}`, status);
-    });
+                    // 4. GARIS HORIZONTAL UTAMA (DARI PARENT KE TIANG)
+                    // Ini adalah garis lurus panjang yang Anda minta
+                    createPath(`M ${pPos.x + pPos.w} ${pPos.cy} L ${midX} ${pPos.cy}`, 'pending');
 
-    // 4. GARIS HORIZONTAL UTAMA (DARI PARENT KE TIANG)
-    // Ini adalah garis lurus panjang yang Anda minta
-    createPath(`M ${pPos.x + pPos.w} ${pPos.cy} L ${midX} ${pPos.cy}`, 'pending');
+                    // 5. GAMBAR TIANG VERTIKAL (PENGHUBUNG SEMUA ANAK)
+                    if (minY !== Infinity && cPositions.length > 0) {
+                        // Garis lurus tegak dari atas ke bawah pada koordinat midX
+                        createPath(`M ${midX} ${minY} L ${midX} ${maxY}`, 'pending');
 
-    // 5. GAMBAR TIANG VERTIKAL (PENGHUBUNG SEMUA ANAK)
-    if (minY !== Infinity && cPositions.length > 0) {
-        // Garis lurus tegak dari atas ke bawah pada koordinat midX
-        createPath(`M ${midX} ${minY} L ${midX} ${maxY}`, 'pending');
-        
-        // Sambungkan titik tengah parent ke tiang vertikal tersebut
-        if (pPos.cy < minY) {
-            createPath(`M ${midX} ${pPos.cy} L ${midX} ${minY}`, 'pending');
-        } else if (pPos.cy > maxY) {
-            createPath(`M ${midX} ${pPos.cy} L ${midX} ${maxY}`, 'pending');
-        }
-    }
-}
+                        // Sambungkan titik tengah parent ke tiang vertikal tersebut
+                        if (pPos.cy < minY) {
+                            createPath(`M ${midX} ${pPos.cy} L ${midX} ${minY}`, 'pending');
+                        } else if (pPos.cy > maxY) {
+                            createPath(`M ${midX} ${pPos.cy} L ${midX} ${maxY}`, 'pending');
+                        }
+                    }
+                }
 
 
             }

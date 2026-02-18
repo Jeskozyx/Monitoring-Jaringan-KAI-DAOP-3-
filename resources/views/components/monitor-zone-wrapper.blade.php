@@ -7,7 +7,8 @@
 
 {{-- MAIN WRAPPER: Flex Row (2 Independent Columns) --}}
 {{-- items-start ensures top of Regular Chain aligns with top of Terminal (since Utara is absolute/negative margin) --}}
-<div class="relative w-fit min-w-full min-h-full p-10 flex flex-row gap-0 items-start justify-start pt-40">    {{-- pt-40 gives space for the Absolute Utara component above --}}
+<div class="relative w-fit min-w-full min-h-full p-10 flex flex-row gap-40 items-start justify-start pt-40">
+    {{-- pt-40 gives space for the Absolute Utara component above --}}
 
     {{-- COL 1: Regular Center Chain --}}
     @if ($regularCenters->count() > 0)
@@ -23,7 +24,7 @@
         {{-- Lintas Utara: Absolute Top, growing Up --}}
         {{-- bottom-full moves it right above the Terminal --}}
         <div id="zone-utara"
-            class="absolute bottom-full mb-60 left-0 flex flex-row gap-8 items-end justify-start px-10 pt-10 pb-8 min-h-[150px] whitespace-nowrap">
+            class="absolute bottom-full mb-80 left-0 flex flex-row gap-8 items-end justify-start px-10 pt-10 pb-8 min-h-[150px] whitespace-nowrap">
             <svg id="svg-utara" class="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0"></svg>
             <div
                 class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg z-30">
@@ -52,7 +53,7 @@
         {{-- Lintas Selatan: Standard Flow Below --}}
         {{-- mt-4 controls distance from Terminal --}}
         <div id="zone-selatan"
-            class="mt-40 flex flex-row gap-8 items-start justify-start relative px-10 pt-8 pb-10 min-h-[150px]">
+            class="mt-80 flex flex-row gap-8 items-start justify-start relative px-10 pt-8 pb-10 min-h-[150px]">
             <svg id="svg-selatan" class="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0"></svg>
             <div
                 class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg z-30">
